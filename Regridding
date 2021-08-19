@@ -18,7 +18,7 @@ lo=repmat(lo,[1 248]);
 la=repmat(la,[1 340])';
 
 %%
-cubes1=cubes(:,:,1);
+cubes1=cubes;
 % Make empty array
 int_cubes=NaN*zeros(size(cubes1,1),size(cubes1,2),size(cubes1,3));
 
