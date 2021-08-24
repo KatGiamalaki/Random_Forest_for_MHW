@@ -136,29 +136,33 @@ allvars = np.array(allvars)
 # %%
 print(allvars.shape)
 
+# Training sample
+
+train_allvars = allvars
+train_labels = labels
 
 # %%
 # Split the data into training and testing sets
 # the random_state parameter is used for initializing the internal random number generator, 
 # which will decide the splitting of data into train and test indices.
-embed(header='143 of rf')
-print("Splitting the data..")
-train_allvars, test_allvars, train_labels, test_labels = train_test_split(
-    allvars, labels, test_size = 0.0, random_state = 42)
+#print("Splitting the data..")
+#train_allvars, test_allvars, train_labels, test_labels = train_test_split(
+#    allvars, labels, test_size = 0.0, random_state = 42)
 
 
 # %%
 print('Training allvars Shape:', train_allvars.shape)
 print('Training Labels Shape:', train_labels.shape)
-print('Testing allvars Shape:', test_allvars.shape)
-print('Testing Labels Shape:', test_labels.shape)
+#print('Testing allvars Shape:', test_allvars.shape)
+#print('Testing Labels Shape:', test_labels.shape)
 
 # %% [markdown]
 # # Randomized Cross Validation
 
 # %%
 # Number of trees in random forest
-n_estimators = [int(x) for x in np.linspace(start = 200, stop = 1000, num = 9)]
+n_estimators = [int(x) for x in np.linspace(start = 200, stop = 1000, 
+                                            num = 9)]
 # Number of features to consider at every split
 max_features = ['auto', 'sqrt']
 # Maximum number of levels in tree
@@ -186,7 +190,12 @@ pprint(random_grid)
 rf = RandomForestClassifier()
 # Random search of parameters, using 3 fold cross validation, 
 # search across 100 different combinations, and use all available cores
-rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = 3)
+rf_random = RandomizedSearchCV(estimator = rf, 
+                               param_distributions=random_grid, 
+                               n_iter=100, 
+                               cv=3, verbose=2, 
+                               random_state=42, 
+                               n_jobs=10)
 # Fit the random search model
 rf_random.fit(train_allvars, train_labels)
 
