@@ -161,7 +161,11 @@ print('Training Labels Shape:', train_labels.shape)
 
 # %%
 # Number of trees in random forest
-n_estimators = [int(x) for x in np.linspace(start = 200, stop = 1000, 
+debug=False
+if debug:
+    n_estimators = [200]
+else:
+    n_estimators = [int(x) for x in np.linspace(start = 200, stop = 1000, 
                                             num = 9)]
 # Number of features to consider at every split
 max_features = ['auto', 'sqrt']
@@ -238,10 +242,10 @@ def evaluate(model, test_allvars, test_labels):
 # Evaluate best model against base model
 base_model = RandomForestClassifier(n_estimators = 10, random_state = 42)
 base_model.fit(train_allvars, train_labels)
-base_accuracy = evaluate(base_model, test_allvars, test_labels)
+base_accuracy = evaluate(base_model, test_allvars, labels_valid)
 
 best_random = rf_random.best_estimator_
-random_accuracy = evaluate(best_random, test_allvars, test_labels)
+random_accuracy = evaluate(best_random, test_allvars, labels_valid)
 
 print('Improvement of {:0.2f}%.'.format( 100 * (random_accuracy - base_accuracy) / base_accuracy))
 
