@@ -1,0 +1,64 @@
+# Script to perform VIIRS 2013 extractions 
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: xavier-rf-mhw-debug
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+      - name: container
+        image: localhost:30081/profxj/ulmo_nvidia:latest  # UPDATE
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "20"   # Should have used 4 instead of 2
+            memory: "2Gi"  # This was way too much! -- I see why Erdong used 1 Gb
+            ephemeral-storage: 50Gi
+          limits:
+            cpu: "8"
+            memory: "8Gi"
+            ephemeral-storage: 100Gi
+            nvidia.com/gpu:  "4"  # See docs to exlude certain types
+        command: ["/bin/bash", "-c"]
+        args:
+          - git clone https://github.com/KatGiamalaki/Random_Forest_for_MHW.git;
+            cd Random_Forest_for_MHW;
+            git checkout jxp; 
+            git pull; 
+            python setup.py develop;
+            cd rfmhw/runs;
+            aws --endpoint http://rook-ceph-rgw-nautiluss3.rook s3 cp s3://mhw/RF/mat_unbalanced.csv ./;
+            aws --endpoint http://rook-ceph-rgw-nautiluss3.rook s3 cp s3://mhw/RF/movav_7_19new.csv ./;
+            python ./rf_for_mhw_runs.py fit --debug;
+            aws --endpoint http://rook-ceph-rgw-nautiluss3.rook s3 cp rf_random_last.pkl s3://mhw/RF/Outputs/rf_random_last.pkl --force;
+        env:
+          - name: "ENDPOINT_URL"
+            value: "http://rook-ceph-rgw-nautiluss3.rook"
+          - name: "S3_ENDPOINT"
+            value: "rook-ceph-rgw-nautiluss3.rook"
+        volumeMounts:
+          - name: prp-s3-credentials
+            mountPath: "/root/.aws/credentials"
+            subPath: "credentials"
+          - name: ephemeral
+            mountPath: "/tmp"
+          - name: "dshm"
+            mountPath: "/dev/shm"
+      nodeSelector:
+        nautilus.io/disktype: nvme
+        gpu-type: "1080Ti"  # titan-xp
+      restartPolicy: Never
+      volumes:
+        # Secrets file for nautilus s3 credentials .aws/credentials and .s3cfg
+        - name: prp-s3-credentials
+          secret:
+            secretName: prp-s3-credentials
+        # Shared memory (necessary for Python's multiprocessing.shared_memory module to work)
+        - name: dshm
+          emptyDir:
+            medium: Memory
+        # Ephemeral storage
+        - name: ephemeral
+          emptyDir: {}

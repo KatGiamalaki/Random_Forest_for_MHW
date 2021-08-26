@@ -27,15 +27,17 @@ import joblib
 
 # # Data Preparation
 
-def fit_me(pargs):
+def fit_me(pargs, file_unbal=None,
+           file_name=None, outfile='rf_random_last.pkl'):
 
     start = datetime.datetime.now()
 
     # Load unbalanced raw dataset
-    if os.getenv('MHW') is None:
-        file_unbal ='/auto/home/agiamala/rf_mhw/mat_unbalanced.csv'
-    else:
-        file_unbal = os.path.join(os.getenv('MHW'), 'db', 'mat_unbalanced.csv')
+    if file_unbal is None:
+        if os.getenv('MHW') is None:
+            file_unbal ='/auto/home/agiamala/rf_mhw/mat_unbalanced.csv'
+        else:
+            file_unbal = os.path.join(os.getenv('MHW'), 'db', 'mat_unbalanced.csv')
     mat_unbal = pd.read_csv(file_unbal, header = None)
     mat_unbal.columns = ['day', 'month','year','doy', 'lon', 'lat', 'Qnet','slp', 'sat', 'wind_speed','sst', 'sstRoC', 'mhw_categories']
 
@@ -78,10 +80,11 @@ def fit_me(pargs):
 
     # Load balanced training dataset - 7 days lag
     print("Loading training set..")
-    if os.getenv('MHW') is None:
-        file_name = '/auto/home/agiamala/rf_mhw/movav_7_19new.csv'
-    else:
-        file_name = os.path.join(os.getenv('MHW'), 'db', 'movav_7_19new.csv')
+    if file_name is None:
+        if os.getenv('MHW') is None:
+            file_name = '/auto/home/agiamala/rf_mhw/movav_7_19new.csv'
+        else:
+            file_name = os.path.join(os.getenv('MHW'), 'db', 'movav_7_19new.csv')
     colnames = ['day', 'month','year','doy', 'lon', 'lat', 'Qnet','slp', 'sat', 'wind_speed','sst', 'sstRoC', 'mhw_categories']
     allvars = pd.read_csv(file_name, names = colnames, header = None)
 
@@ -214,7 +217,7 @@ def fit_me(pargs):
         random_accuracy - base_accuracy) / base_accuracy))
 
     # Save
-    joblib.dump(rf_random, 'rf_random_last.pkl')
+    joblib.dump(rf_random, outfile)
 
     # End
     end = datetime.datetime.now()
