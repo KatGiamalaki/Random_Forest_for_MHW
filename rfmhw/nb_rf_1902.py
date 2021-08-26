@@ -161,7 +161,7 @@ print('Training Labels Shape:', train_labels.shape)
 
 # %%
 # Number of trees in random forest
-debug=False
+debug=True
 if debug:
     n_estimators = [200]
 else:
@@ -170,7 +170,10 @@ else:
 # Number of features to consider at every split
 max_features = ['auto', 'sqrt']
 # Maximum number of levels in tree
-max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
+if debug:
+    max_depth = [10]
+else:
+    max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
 max_depth.append(None)
 # Minimum number of samples required to split a node
 min_samples_split = [2, 5, 10]
@@ -204,14 +207,16 @@ rf_random = RandomizedSearchCV(estimator = rf,
 rf_random.fit(train_allvars, train_labels)
 
 
+embed(header='210 of rf_1902')
+
 # %%
-rf_randomCV.best_estimator_
+rf_random.best_estimator_
 
 
 # %%
 # *** Not working ***
 
-rf_randomCV.cv_results_
+rf_random.cv_results_
 
 
 # %%
