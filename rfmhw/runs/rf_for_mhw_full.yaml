@@ -17,10 +17,10 @@ spec:
             memory: "2Gi"  # This was way too much! -- I see why Erdong used 1 Gb
             ephemeral-storage: 50Gi
           limits:
-            cpu: "8"
+            cpu: "30"
             memory: "8Gi"
             ephemeral-storage: 100Gi
-            nvidia.com/gpu:  "4"  # See docs to exlude certain types
+            #nvidia.com/gpu:  "4"  # See docs to exlude certain types
         command: ["/bin/bash", "-c"]
         args:
           - git clone https://github.com/KatGiamalaki/Random_Forest_for_MHW.git;
@@ -31,7 +31,7 @@ spec:
             cd rfmhw/runs;
             aws --endpoint http://rook-ceph-rgw-nautiluss3.rook s3 cp s3://mhw/RF/mat_unbalanced.csv ./;
             aws --endpoint http://rook-ceph-rgw-nautiluss3.rook s3 cp s3://mhw/RF/movav_7_19new.csv ./;
-            python ./rf_for_mhw_runs.py fit --debug;
+            python ./rf_for_mhw_runs.py fit --debug --ncpu 20;
             aws --endpoint http://rook-ceph-rgw-nautiluss3.rook s3 cp rf_random_last.pkl s3://mhw/RF/Outputs/rf_random_last.pkl --force;
         env:
           - name: "ENDPOINT_URL"

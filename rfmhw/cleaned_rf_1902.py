@@ -27,7 +27,7 @@ import joblib
 
 # # Data Preparation
 
-def fit_me(pargs, file_unbal=None,
+def fit_me(pargs, file_unbal=None, ncpu=10,
            file_name=None, outfile='rf_random_last.pkl'):
 
     start = datetime.datetime.now()
@@ -187,7 +187,7 @@ def fit_me(pargs, file_unbal=None,
                                 n_iter=100, 
                                 cv=3, verbose=2, 
                                 random_state=42, 
-                                n_jobs=10)
+                                n_jobs=ncpu)
     # Fit the random search model
     rf_random.fit(train_allvars, train_labels)
 

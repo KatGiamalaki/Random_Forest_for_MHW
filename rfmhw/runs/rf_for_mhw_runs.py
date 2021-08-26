@@ -19,7 +19,7 @@ from IPython import embed
 
 def fit(pargs):
     cleaned_rf_1902.fit_me(pargs, file_unbal='./mat_unbalanced.csv',
-                           file_name='./movav_7_19new.csv',
+        ncpu=pargs.ncpu, file_name='./movav_7_19new.csv',
                            outfile='./rf_random_last.pkl')
 
         
@@ -39,6 +39,7 @@ def parse_option():
     """
     parser = argparse.ArgumentParser("SSL Figures")
     parser.add_argument("task", type=str, help="task to execute: 'fit'")
+    parser.add_argument('--ncpu', type=int, default=10, help='Number of CPUs to run with')
     parser.add_argument('--debug', default=False, action='store_true',
                         help='Debug?')
     args = parser.parse_args()
