@@ -13,12 +13,12 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "20"   # Should have used 4 instead of 2
-            memory: "2Gi"  # This was way too much! -- I see why Erdong used 1 Gb
+            cpu: "20"   
+            memory: "6Gi"  # Needs at least 5Gi
             ephemeral-storage: 50Gi
           limits:
             cpu: "30"
-            memory: "8Gi"
+            memory: "12Gi"
             ephemeral-storage: 100Gi
             #nvidia.com/gpu:  "4"  # See docs to exlude certain types
         command: ["/bin/bash", "-c"]
